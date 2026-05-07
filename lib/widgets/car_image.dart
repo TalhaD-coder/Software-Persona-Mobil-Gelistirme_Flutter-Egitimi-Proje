@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/car_model.dart';
 
 /// Araç görselini gösterir.
-/// isAsset true ise Image.asset, false ise Image.network kullanır.
+/// image URL boşsa veya yüklenemezse araç ikonu gösterilir.
 class CarImage extends StatelessWidget {
   final Car car;
   final BoxFit fit;
@@ -27,13 +27,8 @@ class CarImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (car.isAsset) {
-      return Image.asset(
-        car.image,
-        fit: fit,
-        errorBuilder: (context, error, stack) => _fallback(),
-      );
-    }
+    if (car.image.isEmpty) return _fallback();
+
     return Image.network(
       car.image,
       fit: fit,
