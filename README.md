@@ -1,15 +1,17 @@
 # 🚗 RentGo — Araç Kiralama Uygulaması
 
 <p align="center">
-  <img src="screenshots/login.png" width="200" alt="Giriş"/>
-  &nbsp;
-  <img src="screenshots/home.png" width="200" alt="Ana Sayfa"/>
-  &nbsp;
-  <img src="screenshots/detail1.png" width="200" alt="Detay"/>
+  <img src="screenshots/login.png" width="180" alt="Giriş"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/anasayfa.png" width="180" alt="Ana Sayfa"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/aracdetay.png" width="180" alt="Araç Detay"/>
 </p>
 
-> Flutter ile geliştirilmiş, modern tasarımlı bir araç kiralama kataloğu uygulaması.  
-> Kullanıcılar araçları listeleyebilir, filtreleyebilir, karşılaştırabilir ve rezervasyon yapabilir.
+<p align="center">
+  <b>Flutter ile geliştirilmiş modern araç kiralama kataloğu uygulaması</b><br/>
+  Kullanıcılar araçları listeleyebilir, filtreleyebilir, karşılaştırabilir ve rezervasyon yapabilir.
+</p>
 
 ---
 
@@ -19,42 +21,42 @@
 
 <p align="center">
   <img src="screenshots/onboarding1.png" width="180" alt="Onboarding 1"/>
-  &nbsp;
+  &nbsp;&nbsp;
   <img src="screenshots/onboarding2.png" width="180" alt="Onboarding 2"/>
-  &nbsp;
+  &nbsp;&nbsp;
   <img src="screenshots/onboarding3.png" width="180" alt="Onboarding 3"/>
-  &nbsp;
+  &nbsp;&nbsp;
   <img src="screenshots/login.png" width="180" alt="Giriş"/>
 </p>
 
 ### Ana Sayfa & Araç Detayı
 
 <p align="center">
-  <img src="screenshots/home.png" width="180" alt="Ana Sayfa"/>
-  &nbsp;
-  <img src="screenshots/detail1.png" width="180" alt="Detay 1"/>
-  &nbsp;
-  <img src="screenshots/detail2.png" width="180" alt="Detay 2"/>
-  &nbsp;
-  <img src="screenshots/detail3.png" width="180" alt="Detay 3"/>
+  <img src="screenshots/anasayfa.png" width="180" alt="Ana Sayfa"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/aracdetay.png" width="180" alt="Araç Detay"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/fiyatbenzeraraclar.png" width="180" alt="Fiyat & Benzer Araçlar"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/tarihsigorta.png" width="180" alt="Tarih & Sigorta"/>
 </p>
 
-### Favoriler, Sepet & Karşılaştırma
+### Favoriler, Sepet & Rezervasyon
 
 <p align="center">
-  <img src="screenshots/favorites.png" width="180" alt="Favoriler"/>
-  &nbsp;
-  <img src="screenshots/cart.png" width="180" alt="Sepet"/>
-  &nbsp;
-  <img src="screenshots/compare1.png" width="180" alt="Karşılaştırma 1"/>
-  &nbsp;
-  <img src="screenshots/compare2.png" width="180" alt="Karşılaştırma 2"/>
+  <img src="screenshots/favoriler.png" width="180" alt="Favoriler"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/sepet.png" width="180" alt="Sepet"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/rezervasyon.png" width="180" alt="Rezervasyon Özeti"/>
 </p>
 
-### Rezervasyon Özeti
+### Araç Karşılaştırma
 
 <p align="center">
-  <img src="screenshots/reservation.png" width="180" alt="Rezervasyon Özeti"/>
+  <img src="screenshots/arackarsilastirma.png" width="180" alt="Araç Karşılaştırma"/>
+  &nbsp;&nbsp;
+  <img src="screenshots/arackarsilastirmadetay.png" width="180" alt="Karşılaştırma Detay"/>
 </p>
 
 ---
@@ -64,13 +66,16 @@
 | Özellik | Açıklama |
 |---|---|
 | 🔐 Kullanıcı Girişi | İsim ve soyisim ile kişiselleştirilmiş giriş |
-| 🚗 Araç Kataloğu | 50 araç, 5 kategori, 30+ farklı marka |
+| 🌐 Web Servis Entegrasyonu | Unsplash API'den gerçek araç fotoğrafları (HTTP GET) |
+| 🗄️ Veri Modelleme | `Car.fromJson()` ile JSON → model dönüşümü |
+| 💾 Yerel Cache | SharedPreferences ile araç listesi önbellekleme |
+| 🚗 Araç Kataloğu | 48 araç, 5 kategori, 20+ farklı marka |
 | 🔍 Akıllı Arama | Marka, model ve şehre göre anlık arama |
 | 🏙️ Şehir Filtresi | İstanbul, Ankara, İzmir, Antalya, Bursa |
 | 🏷️ Tip Filtresi | Sedan, SUV, Elektrikli, Spor, Minivan |
 | 💰 Fiyat Filtresi | Slider ile min-max fiyat aralığı |
 | 📊 Sıralama | Ucuzdan pahalıya, pahalıdan ucuza, puana göre |
-| 📋 Araç Detayı | Motor, 0-100, tüketim, menzil, donanım |
+| 📋 Araç Detayı | Motor, 0-100, tüketim, menzil, donanım listesi |
 | 📅 Tarih Seçimi | Alış ve iade tarihi, geçmiş tarih engeli |
 | 🛡️ Sigorta Seçimi | Temel sigorta veya tam kasko |
 | 💳 Fiyat Hesabı | Gün × (araç + sigorta) anlık hesaplama |
@@ -83,6 +88,38 @@
 
 ---
 
+## 🌐 API Entegrasyonu
+
+Bu proje web servisinden gerçek veri çekmektedir.
+
+### Unsplash API
+- **Endpoint:** `https://api.unsplash.com/search/photos`
+- **Kullanım:** Her araç için marka+model bazlı fotoğraf arama
+- **Yöntem:** HTTP GET isteği, `Authorization: Client-ID` header
+- **Dönüşüm:** Gelen JSON verisi `Car.fromJson()` ile modele dönüştürülür
+
+### Veri Akışı
+
+```
+Unsplash API
+     │
+     ▼ HTTP GET
+CarService.getCars()
+     │
+     ▼ Car.fromJson()
+List<Car>
+     │
+     ▼ SharedPreferences Cache
+HomeScreen (GridView)
+```
+
+### Cache Mekanizması
+- İlk açılışta API'den veri çekilir ve `SharedPreferences`'a kaydedilir
+- Sonraki açılışlarda cache'den okunur — anında yüklenir
+- Pull-to-refresh ile cache yenilenir
+
+---
+
 ## 🎨 Teknik Özellikler
 
 - **Hero Animasyonu** — Araç kartından detaya geçişte görsel animasyonu
@@ -91,7 +128,6 @@
 - **Haptic Feedback** — Favori, sepet ve karşılaştırma işlemlerinde titreşim
 - **Pull-to-Refresh** — Ana sayfada aşağı çekerek yenileme
 - **Fiyat Animasyonu** — Detay sayfasında fiyat değişiminde animasyon
-- **Hint Animasyonu** — Sepette swipe özelliğini gösteren ipucu
 
 ---
 
@@ -102,13 +138,17 @@ Flutter 3.41.9 (stable)
 Dart 3.11.5
 ```
 
-**Paketler:** Yalnızca `material.dart` (ekstra paket kullanılmamıştır)
+| Paket | Versiyon | Kullanım |
+|---|---|---|
+| `http` | ^1.2.2 | Web servis HTTP istekleri |
+| `shared_preferences` | ^2.3.2 | Araç listesi yerel önbellekleme |
+| `cupertino_icons` | ^1.0.8 | iOS stil ikonlar |
 
 **Mimari:**
 - `StatelessWidget` / `StatefulWidget`
 - `Navigator.push` / `pushReplacement` ile sayfa geçişleri
-- `Route Arguments` ile sayfalar arası veri taşıma
 - `setState` ile state yönetimi
+- Servis katmanı (`CarService`) ile UI/veri ayrımı
 
 ---
 
@@ -116,32 +156,32 @@ Dart 3.11.5
 
 ```
 lib/
-├── main.dart                          # Uygulama giriş noktası & tema
+├── main.dart                           # Uygulama giriş noktası & tema
 ├── constants/
-│   ├── app_colors.dart                # Merkezi renk sabitleri
-│   └── app_config.dart                # Uygulama sabitleri (limitler, süreler)
-├── data/
-│   └── mock_data.dart                 # 50 araç mock verisi
+│   ├── app_colors.dart                 # Merkezi renk sabitleri
+│   └── app_config.dart                 # Uygulama sabitleri
 ├── models/
-│   ├── car_model.dart                 # Araç modeli (fromJson/toJson)
-│   └── cart_item_model.dart           # Sepet öğesi modeli
+│   ├── car_model.dart                  # Araç modeli (fromJson/toJson)
+│   └── cart_item_model.dart            # Sepet öğesi modeli
+├── services/
+│   └── car_service.dart                # Unsplash API + cache yönetimi
 ├── screens/
-│   ├── splash_screen.dart             # Açılış ekranı
-│   ├── onboarding_screen.dart         # 3 sayfalık tanıtım
-│   ├── login_screen.dart              # Kullanıcı giriş ekranı
-│   ├── home_screen.dart               # Ana sayfa (liste, filtre, arama)
-│   ├── detail_screen.dart             # Araç detay sayfası
-│   ├── cart_screen.dart               # Sepet sayfası
-│   ├── favorites_screen.dart          # Favoriler sayfası
-│   ├── compare_screen.dart            # Araç karşılaştırma
+│   ├── splash_screen.dart              # Açılış ekranı
+│   ├── onboarding_screen.dart          # 3 sayfalık tanıtım
+│   ├── login_screen.dart               # Kullanıcı giriş ekranı
+│   ├── home_screen.dart                # Ana sayfa (liste, filtre, arama)
+│   ├── detail_screen.dart              # Araç detay sayfası
+│   ├── cart_screen.dart                # Sepet sayfası
+│   ├── favorites_screen.dart           # Favoriler sayfası
+│   ├── compare_screen.dart             # Araç karşılaştırma
 │   └── reservation_summary_screen.dart # Rezervasyon özeti
 ├── utils/
-│   ├── date_formatter.dart            # Tarih formatlama yardımcısı
-│   └── snackbar_helper.dart           # Merkezi SnackBar yönetimi
+│   ├── date_formatter.dart             # Tarih formatlama yardımcısı
+│   └── snackbar_helper.dart            # Merkezi SnackBar yönetimi
 └── widgets/
-    ├── car_card.dart                  # Araç kart widget'ı
-    ├── car_image.dart                 # Asset/Network görsel widget'ı
-    └── skeleton_card.dart             # Yükleme animasyonu widget'ı
+    ├── car_card.dart                   # Araç kart widget'ı
+    ├── car_image.dart                  # Asset/Network görsel widget'ı
+    └── skeleton_card.dart              # Yükleme animasyonu widget'ı
 ```
 
 ---
@@ -162,7 +202,7 @@ flutter pub get
 flutter run
 ```
 
-> **Not:** Android emülatör veya fiziksel Android cihaz gereklidir.
+> **Not:** Android emülatör veya fiziksel Android cihaz gereklidir. İlk açılışta API'den veri çekildiği için internet bağlantısı gereklidir.
 
 ---
 
@@ -173,9 +213,10 @@ Bu proje aşağıdaki Flutter konularını kapsamaktadır:
 - ✅ Widget ağacı ve Stateless/Stateful widget mantığı
 - ✅ Navigator ile sayfa geçişleri ve Route Arguments
 - ✅ GridView ve ListView.builder ile dinamik listeler
-- ✅ Model sınıfı oluşturma ve JSON dönüşümü
+- ✅ **Web servisinden HTTP GET ile veri çekme**
+- ✅ **Model sınıfı oluşturma ve JSON dönüşümü (fromJson)**
+- ✅ **Yerel veri önbellekleme (SharedPreferences)**
 - ✅ setState ile basit state yönetimi
-- ✅ Asset yönetimi (görseller)
 - ✅ Material Design 3 tema ve bileşenleri
 - ✅ Animasyonlar (Hero, AnimatedContainer, AnimatedSwitcher)
 
