@@ -1,17 +1,6 @@
 # 🚗 RentGo — Araç Kiralama Uygulaması
 
-<p align="center">
-  <img src="screenshots/login.png" width="180" alt="Giriş"/>
-  &nbsp;&nbsp;
-  <img src="screenshots/anasayfa.png" width="180" alt="Ana Sayfa"/>
-  &nbsp;&nbsp;
-  <img src="screenshots/aracdetay.png" width="180" alt="Araç Detay"/>
-</p>
-
-<p align="center">
-  <b>Flutter ile geliştirilmiş modern araç kiralama kataloğu uygulaması</b><br/>
-  Kullanıcılar araçları listeleyebilir, filtreleyebilir, karşılaştırabilir ve rezervasyon yapabilir.
-</p>
+> Flutter ile geliştirilmiş, modern ve kullanıcı dostu bir araç kiralama kataloğu uygulaması. Gerçek web servislerinden çekilen araç verileri ile kullanıcılar araçları listeleyebilir, filtreleyebilir, karşılaştırabilir, favorilere ekleyebilir ve rezervasyon yapabilir. Uygulama; temiz mimari yapısı, animasyonlu arayüzü ve kapsamlı özellikleriyle Flutter'ın sunduğu imkânları tam anlamıyla yansıtmaktadır.
 
 ---
 
@@ -66,7 +55,7 @@
 | Özellik | Açıklama |
 |---|---|
 | 🔐 Kullanıcı Girişi | İsim ve soyisim ile kişiselleştirilmiş giriş |
-| 🌐 Web Servis Entegrasyonu | Unsplash API'den gerçek araç fotoğrafları (HTTP GET) |
+| 🌐 Web Servis Entegrasyonu | İki farklı API'den gerçek araç verisi ve fotoğraf |
 | 🗄️ Veri Modelleme | `Car.fromJson()` ile JSON → model dönüşümü |
 | 💾 Yerel Cache | SharedPreferences ile araç listesi önbellekleme |
 | 🚗 Araç Kataloğu | 48 araç, 5 kategori, 20+ farklı marka |
@@ -88,46 +77,92 @@
 
 ---
 
-## 🌐 API Entegrasyonu
+## 🌐 Web Servis Entegrasyonu
 
-Bu proje web servisinden gerçek veri çekmektedir.
+Uygulama iki farklı web servisinden HTTP GET istekleri ile gerçek veri çekmektedir. Gelen JSON verisi `Car.fromJson()` metodu ile Dart modeline dönüştürülmekte, `SharedPreferences` ile yerel olarak önbelleğe alınmaktadır.
 
-### Unsplash API
-- **Endpoint:** `https://api.unsplash.com/search/photos`
-- **Kullanım:** Her araç için marka+model bazlı fotoğraf arama
-- **Yöntem:** HTTP GET isteği, `Authorization: Client-ID` header
-- **Dönüşüm:** Gelen JSON verisi `Car.fromJson()` ile modele dönüştürülür
+### 1. NHTSA vPIC API — Araç Marka/Model Verisi
+
+ABD Ulusal Karayolu Trafik Güvenliği İdaresi'nin resmi araç veritabanı. Ücretsiz, key gerektirmez.
+
+| | |
+|---|---|
+| **Base URL** | `https://vpic.nhtsa.dot.gov/api/vehicles` |
+| **Endpoint** | `GET /GetModelsForMake/{make}?format=json` |
+| **Dönen Veri** | Araç marka, model adı, model ID |
+| **Kullanım** | Her marka için model listesi çekilir |
+
+```json
+{
+  "Count": 258,
+  "Results": [
+    { "Make_ID": 452, "Make_Name": "BMW", "Model_ID": 1707, "Model_Name": "128i" },
+    { "Make_ID": 452, "Make_Name": "BMW", "Model_ID": 1710, "Model_Name": "M3" }
+  ]
+}
+```
+
+### 2. Unsplash API — Araç Fotoğrafları
+
+Dünyanın en büyük ücretsiz fotoğraf platformu. Her araç için marka+model bazlı fotoğraf aranır.
+
+| | |
+|---|---|
+| **Base URL** | `https://api.unsplash.com` |
+| **Endpoint** | `GET /search/photos?query={make}+{model}&per_page=1` |
+| **Header** | `Authorization: Client-ID {key}` |
+| **Dönen Veri** | Fotoğraf URL'leri (thumbnail, regular, full) |
+| **Kullanım** | Her araç için uygun fotoğraf çekilir |
+
+```json
+{
+  "results": [
+    {
+      "urls": {
+        "regular": "https://images.unsplash.com/photo-..."
+      }
+    }
+  ]
+}
+```
 
 ### Veri Akışı
 
 ```
-Unsplash API
-     │
-     ▼ HTTP GET
-CarService.getCars()
-     │
-     ▼ Car.fromJson()
-List<Car>
-     │
-     ▼ SharedPreferences Cache
-HomeScreen (GridView)
+NHTSA API                    Unsplash API
+(Marka/Model)                (Fotoğraf)
+     │                            │
+     └──────────┬─────────────────┘
+                ▼
+        CarService._buildCarJson()
+                │
+                ▼
+          Car.fromJson()
+                │
+                ▼
+     SharedPreferences Cache
+                │
+                ▼
+       HomeScreen GridView
 ```
 
 ### Cache Mekanizması
-- İlk açılışta API'den veri çekilir ve `SharedPreferences`'a kaydedilir
-- Sonraki açılışlarda cache'den okunur — anında yüklenir
-- Pull-to-refresh ile cache yenilenir
+
+- **İlk açılış:** API'den veri çekilir → `SharedPreferences`'a JSON olarak kaydedilir
+- **Sonraki açılışlar:** Cache'den okunur → anında yüklenir, API çağrısı yapılmaz
+- **Pull-to-refresh:** Cache temizlenir, API'den yeniden çekilir
 
 ---
 
 ## 🎨 Teknik Özellikler
 
 - **Hero Animasyonu** — Araç kartından detaya geçişte görsel animasyonu
-- **Skeleton Loading** — İlk yüklemede shimmer animasyonlu placeholder
-- **Swipe-to-Delete** — Sepette sola kaydırarak silme
+- **Skeleton Loading** — Yükleme sırasında shimmer animasyonlu placeholder kartlar
+- **Swipe-to-Delete** — Sepette sola kaydırarak silme + hint animasyonu
 - **Haptic Feedback** — Favori, sepet ve karşılaştırma işlemlerinde titreşim
-- **Pull-to-Refresh** — Ana sayfada aşağı çekerek yenileme
-- **Fiyat Animasyonu** — Detay sayfasında fiyat değişiminde animasyon
+- **Pull-to-Refresh** — Ana sayfada aşağı çekerek listeyi yenileme
+- **Fiyat Animasyonu** — Detay sayfasında tarih/sigorta değişiminde fiyat animasyonu
+- **AnimatedContainer** — Filtre chip'lerinde seçim animasyonu
 
 ---
 
@@ -140,7 +175,7 @@ Dart 3.11.5
 
 | Paket | Versiyon | Kullanım |
 |---|---|---|
-| `http` | ^1.2.2 | Web servis HTTP istekleri |
+| `http` | ^1.2.2 | NHTSA ve Unsplash API HTTP istekleri |
 | `shared_preferences` | ^2.3.2 | Araç listesi yerel önbellekleme |
 | `cupertino_icons` | ^1.0.8 | iOS stil ikonlar |
 
@@ -148,7 +183,8 @@ Dart 3.11.5
 - `StatelessWidget` / `StatefulWidget`
 - `Navigator.push` / `pushReplacement` ile sayfa geçişleri
 - `setState` ile state yönetimi
-- Servis katmanı (`CarService`) ile UI/veri ayrımı
+- `CarService` servis katmanı ile UI ve veri mantığı ayrımı
+- `AppColors` ve `AppConfig` ile merkezi sabit yönetimi
 
 ---
 
@@ -164,9 +200,9 @@ lib/
 │   ├── car_model.dart                  # Araç modeli (fromJson/toJson)
 │   └── cart_item_model.dart            # Sepet öğesi modeli
 ├── services/
-│   └── car_service.dart                # Unsplash API + cache yönetimi
+│   └── car_service.dart                # NHTSA + Unsplash API & cache
 ├── screens/
-│   ├── splash_screen.dart              # Açılış ekranı
+│   ├── splash_screen.dart              # Açılış ekranı (2 sn)
 │   ├── onboarding_screen.dart          # 3 sayfalık tanıtım
 │   ├── login_screen.dart               # Kullanıcı giriş ekranı
 │   ├── home_screen.dart                # Ana sayfa (liste, filtre, arama)
@@ -182,6 +218,32 @@ lib/
     ├── car_card.dart                   # Araç kart widget'ı
     ├── car_image.dart                  # Asset/Network görsel widget'ı
     └── skeleton_card.dart              # Yükleme animasyonu widget'ı
+```
+
+---
+
+## 🔄 Uygulama Akışı
+
+```
+Splash (2sn)
+    │
+    ▼
+Onboarding (3 sayfa)
+    │
+    ▼
+Login (İsim & Soyisim)
+    │
+    ▼
+Home (Araç Listesi)
+    ├── Arama / Filtre / Sıralama
+    ├── Araç Kartı → Detay
+    │       ├── Tarih & Sigorta Seçimi
+    │       ├── Sepete Ekle
+    │       ├── Favoriye Ekle
+    │       └── Karşılaştırmaya Ekle
+    ├── Favoriler
+    ├── Sepet → Rezervasyon Özeti
+    └── Karşılaştırma (2 araç)
 ```
 
 ---
@@ -202,7 +264,9 @@ flutter pub get
 flutter run
 ```
 
-> **Not:** Android emülatör veya fiziksel Android cihaz gereklidir. İlk açılışta API'den veri çekildiği için internet bağlantısı gereklidir.
+> **Not:** Android emülatör veya fiziksel Android cihaz gereklidir.  
+> İlk açılışta API'den veri çekildiği için internet bağlantısı gereklidir.  
+> Sonraki açılışlarda cache kullanıldığından internet bağlantısı gerekmez.
 
 ---
 
@@ -211,14 +275,16 @@ flutter run
 Bu proje aşağıdaki Flutter konularını kapsamaktadır:
 
 - ✅ Widget ağacı ve Stateless/Stateful widget mantığı
-- ✅ Navigator ile sayfa geçişleri ve Route Arguments
+- ✅ Navigator ile sayfa geçişleri ve veri aktarımı
 - ✅ GridView ve ListView.builder ile dinamik listeler
-- ✅ **Web servisinden HTTP GET ile veri çekme**
-- ✅ **Model sınıfı oluşturma ve JSON dönüşümü (fromJson)**
+- ✅ **Web servisinden HTTP GET ile veri çekme (NHTSA + Unsplash)**
+- ✅ **Model sınıfı oluşturma ve JSON dönüşümü (`fromJson` / `toJson`)**
 - ✅ **Yerel veri önbellekleme (SharedPreferences)**
-- ✅ setState ile basit state yönetimi
+- ✅ setState ile state yönetimi
 - ✅ Material Design 3 tema ve bileşenleri
-- ✅ Animasyonlar (Hero, AnimatedContainer, AnimatedSwitcher)
+- ✅ Animasyonlar (Hero, AnimatedContainer, AnimatedSwitcher, SlideTransition)
+- ✅ Form doğrulama (login ekranı)
+- ✅ Tarih seçici (DatePicker)
 
 ---
 
