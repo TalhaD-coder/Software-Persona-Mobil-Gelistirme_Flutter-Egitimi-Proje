@@ -164,14 +164,18 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                       final item = entry.value;
                       final car = _carById(item.carId);
                       // Sadece ilk karta hint animasyonu uygula
-                      final widget_ = _buildCartItem(car, item, entry.key);
+                      final cartItemWidget = _buildCartItem(
+                        car,
+                        item,
+                        entry.key,
+                      );
                       if (index == 0) {
                         return SlideTransition(
                           position: _hintAnimation,
-                          child: widget_,
+                          child: cartItemWidget,
                         );
                       }
-                      return widget_;
+                      return cartItemWidget;
                     },
                   ),
                 ),
@@ -616,4 +620,3 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
     );
   }
 }
-

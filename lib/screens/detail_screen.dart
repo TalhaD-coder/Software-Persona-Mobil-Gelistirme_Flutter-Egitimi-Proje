@@ -68,9 +68,8 @@ class _DetailScreenState extends State<DetailScreen> {
   Color _getTypeColor(String type) => AppColors.forCarType(type);
 
   /// Tarih formatı — DateFormatter'dan alınır
-  String _formatDate(DateTime date) => DateFormatter.full(date);
-
-  // Başlangıç tarihi seçici
+  String _formatDate(DateTime date) =>
+      DateFormatter.full(date); // Başlangıç tarihi seçici
   Future<void> _pickStartDate() async {
     final today = DateTime.now();
     final firstDate = DateTime(today.year, today.month, today.day + 1);
@@ -1074,9 +1073,7 @@ class _DetailScreenState extends State<DetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6),
         ],
@@ -1177,9 +1174,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     title,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: isSelected
-                          ? AppColors.primary
-                          : Colors.black87,
+                      color: isSelected ? AppColors.primary : Colors.black87,
                     ),
                   ),
                   Text(
@@ -1202,4 +1197,3 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 }
-

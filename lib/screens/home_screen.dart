@@ -2,7 +2,7 @@
 import 'package:flutter/services.dart';
 import '../models/car_model.dart';
 import '../models/cart_item_model.dart';
-import '../data/mock_data.dart';
+import '../services/car_service.dart';
 import '../widgets/car_card.dart';
 import '../widgets/skeleton_card.dart';
 import '../constants/app_colors.dart';
@@ -24,9 +24,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Tüm araçlar
-  final List<Car> _allCars = MockData.getCars();
-  bool _isLoading = true; // İlk yükleme skeleton için
+  // Tüm araçlar — API'den yüklenir, hata olursa mock data kullanılır
+  List<Car> _allCars = [];
+  bool _isLoading = true;
 
   // Favori araç id'leri
   final Set<int> _favoriteIds = {};
@@ -64,13 +64,28 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Kısa bir gecikme ile skeleton'dan gerçek listeye geç
-    Future.delayed(
-      const Duration(milliseconds: AppConfig.skeletonDuration),
-      () {
-        if (mounted) setState(() => _isLoading = false);
-      },
-    );
+    _loadCars();
+  }
+
+  /// NHTSA + Unsplash API'sinden araçları yükler.
+  /// Cache varsa anında açılır, yoksa API'den çeker.
+  Future<void> _loadCars() async {
+    try {
+      final cars = await CarService.getCars();
+      if (mounted) {
+        setState(() {
+          _allCars = cars;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _allCars = [];
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -333,22 +348,33 @@ class _HomeScreenState extends State<HomeScreen> {
                       value: _selectedCity,
                       isExpanded: true,
                       icon: const Icon(Icons.keyboard_arrow_down),
-                      items: MockData.cities.map((city) {
-                        return DropdownMenuItem(
-                          value: city,
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.location_city,
-                                size: 16,
-                                color: AppColors.primary,
+                      items:
+                          const [
+                            'Tümü',
+                            'İstanbul',
+                            'Ankara',
+                            'İzmir',
+                            'Antalya',
+                            'Bursa',
+                          ].map((city) {
+                            return DropdownMenuItem(
+                              value: city,
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.location_city,
+                                    size: 16,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    city,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Text(city, style: const TextStyle(fontSize: 14)),
-                            ],
-                          ),
-                        );
-                      }).toList(),
+                            );
+                          }).toList(),
                       onChanged: (value) {
                         setState(() => _selectedCity = value!);
                       },
@@ -365,9 +391,23 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              itemCount: MockData.carTypes.length,
+              itemCount: const [
+                'Tümü',
+                'Sedan',
+                'SUV',
+                'Elektrikli',
+                'Spor',
+                'Minivan',
+              ].length,
               itemBuilder: (context, index) {
-                final type = MockData.carTypes[index];
+                final type = const [
+                  'Tümü',
+                  'Sedan',
+                  'SUV',
+                  'Elektrikli',
+                  'Spor',
+                  'Minivan',
+                ][index];
                 final isSelected = _selectedType == type;
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
@@ -588,8 +628,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: AppColors.primary,
                     onRefresh: () async {
                       HapticFeedback.mediumImpact();
-                      await Future.delayed(const Duration(milliseconds: 800));
-                      setState(() {}); // Listeyi yenile
+                      await _loadCars();
                     },
                     child: GridView.builder(
                       padding: const EdgeInsets.all(12),
@@ -750,4 +789,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

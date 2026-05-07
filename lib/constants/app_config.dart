@@ -14,9 +14,6 @@ class AppConfig {
   // Sigorta fiyatı
   static const int fullInsurancePrice = 500;
 
-  // Animasyon süreleri (ms)
+  // Splash süresi (ms)
   static const int splashDuration = 2000;
-  static const int skeletonDuration = 800;
-  static const int hintAnimationDelay = 600;
-  static const int priceAnimationDuration = 300;
 }
