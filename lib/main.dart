@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'constants/app_colors.dart';
 
-void main() {
+void main() async {
+  // shared_preferences gibi platform plugin'leri için gerekli
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const RentGoApp());
 }
 
