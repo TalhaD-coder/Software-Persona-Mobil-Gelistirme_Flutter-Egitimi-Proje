@@ -30,6 +30,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Impeller'ı devre dışı bırak — emülatör OpenGLES uyumsuzluğu için -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
+        <!-- OnBackInvokedCallback etkinleştir -->
+        <meta-data
+            android:name="android:enableOnBackInvokedCallback"
+            android:value="true" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
