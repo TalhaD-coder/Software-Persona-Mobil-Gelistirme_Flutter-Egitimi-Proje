@@ -250,23 +250,36 @@ Home (Araç Listesi)
 
 ## 🚀 Çalıştırma Adımları
 
+### Önkoşullar
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) kurulu olmalı (3.x ve üzeri)
+- Android Studio veya VS Code kurulu olmalı
+- Android emülatör veya fiziksel Android cihaz bağlı olmalı
+- İnternet bağlantısı (ilk açılışta API'den veri çekmek için)
+
+### Kurulum
+
 ```bash
 # 1. Projeyi klonla
 git clone https://github.com/TalhaD-coder/Software-Persona-Mobil-Gelistirme_Flutter-Egitimi-Proje.git
 
-# 2. Klasöre gir
+# 2. Proje klasörüne gir
 cd mini_katalog
 
 # 3. Bağımlılıkları yükle
 flutter pub get
 
-# 4. Uygulamayı çalıştır
+# 4. Emülatörü başlat (Android Studio > Device Manager > Play)
+# veya fiziksel cihazı USB ile bağla
+
+# 5. Uygulamayı çalıştır
 flutter run
 ```
 
-> **Not:** Android emülatör veya fiziksel Android cihaz gereklidir.  
-> İlk açılışta API'den veri çekildiği için internet bağlantısı gereklidir.  
-> Sonraki açılışlarda cache kullanıldığından internet bağlantısı gerekmez.
+### Notlar
+- **İlk açılış:** API'den veri çekildiği için 10-20 saniye sürebilir
+- **Sonraki açılışlar:** Cache'den yüklendiği için anında açılır
+- **İnternet yoksa:** Uygulama açılır ama araç listesi boş görünür
+- Sorun yaşanırsa önce `flutter clean` ardından `flutter pub get` çalıştırın
 
 ---
 
